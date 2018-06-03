@@ -1,0 +1,71 @@
+diff --git a/common.mk b/common.mk
+index 7b1b4a5..7593686 100644
+--- a/common.mk
++++ b/common.mk
+@@ -20,6 +20,7 @@ OPTEE_EXAMPLES_PATH		?= $(ROOT)/optee_examples
+ BENCHMARK_APP_PATH		?= $(ROOT)/optee_benchmark
+ BENCHMARK_APP_OUT		?= $(BENCHMARK_APP_PATH)/out
+ LIBYAML_LIB_OUT			?= $(BENCHMARK_APP_OUT)/libyaml/out/lib
++ON_LINE_PAY_PATH			?= $(ROOT)/onLinePay
+ 
+ # default high verbosity. slow uarts shall specify lower if prefered
+ CFG_TEE_CORE_LOG_LEVEL		?= 3
+@@ -306,7 +307,7 @@ OPTEE_OS_CLEAN_COMMON_FLAGS ?= $(OPTEE_OS_COMMON_EXTRA_FLAGS)
+ ifeq ($(CFG_TEE_BENCHMARK),y)
+ optee-os-clean-common: benchmark-app-clean-common
+ endif
+-optee-os-clean-common: xtest-clean optee-examples-clean
++optee-os-clean-common: xtest-clean optee-examples-clean onLinePay-clean
+ 	$(MAKE) -C $(OPTEE_OS_PATH) $(OPTEE_OS_CLEAN_COMMON_FLAGS) clean
+ 
+ OPTEE_CLIENT_COMMON_FLAGS ?= CROSS_COMPILE=$(CROSS_COMPILE_NS_USER) \
+@@ -371,6 +372,25 @@ optee-examples-clean-common:
+ 			$(OPTEE_EXAMPLES_CLEAN_COMMON_FLAGS) clean
+ 
+ ################################################################################
++# on line pay test case
++################################################################################
++ON_LINE_PAY_COMMON_FLAGS ?= HOST_CROSS_COMPILE=$(CROSS_COMPILE_NS_USER)\
++	TA_CROSS_COMPILE=$(CROSS_COMPILE_S_USER) \
++	TA_DEV_KIT_DIR=$(OPTEE_OS_TA_DEV_KIT_DIR) \
++	TEEC_EXPORT=$(OPTEE_CLIENT_EXPORT)
++
++.PHONY: onLinePay-common
++onLinePay-common: optee-os optee-client
++	$(MAKE) -C $(ON_LINE_PAY_PATH) $(ON_LINE_PAY_COMMON_FLAGS)
++
++ON_LINE_PAY_CLEAN_COMMON_FLAGS ?= TA_DEV_KIT_DIR=$(OPTEE_OS_TA_DEV_KIT_DIR)
++
++.PHONY: onLinePay-clean-common
++onLinePay-clean-common:
++	$(MAKE) -C $(ON_LINE_PAY_PATH) \
++			$(ON_LINE_PAY_CLEAN_COMMON_FLAGS) clean
++
++################################################################################
+ # benchmark_app
+ ################################################################################
+ BENCHMARK_APP_COMMON_FLAGS ?= CROSS_COMPILE=$(CROSS_COMPILE_NS_USER) \
+@@ -409,7 +429,7 @@ ifeq ($(CFG_TEE_BENCHMARK),y)
+ filelist-tee-common: benchmark-app
+ endif
+ filelist-tee-common: fl:=$(GEN_ROOTFS_FILELIST)
+-filelist-tee-common: optee-client xtest optee-examples
++filelist-tee-common: optee-client xtest optee-examples onLinePay
+ 	@echo "# filelist-tee-common /start" 				> $(fl)
+ 	@echo "dir /lib/optee_armtz 755 0 0" 				>> $(fl)
+ 	@if [ -e $(OPTEE_EXAMPLES_PATH)/out/ca ]; then \
+@@ -454,6 +474,14 @@ filelist-tee-common: optee-client xtest optee-examples
+ 			"$(OPTEE_GENDRV_MODULE) 755 0 0" \
+ 									>> $(fl); \
+ 	fi
++	@echo "#on line pay TA " >> $(fl)
++	@if [ -e $(ON_LINE_PAY_PATH)/host/onLinePay ]; then \
++		echo "file /bin/onLinePay" \
++			"$(ON_LINE_PAY_PATH)/host/onLinePay 755 0 0" >> $(fl); \
++		echo "file /lib/optee_armtz/abb6f4b6-8e33-4ad2-9805-e64f2c7cc70c.ta" \
++			"$(ON_LINE_PAY_PATH)/ta/abb6f4b6-8e33-4ad2-9805-e64f2c7cc70c.ta 444 0 0" \
++			>> $(fl); \
++ 	fi
+ 	@echo "# OP-TEE Client" 					>> $(fl)
+ 	@echo "file /bin/tee-supplicant $(OPTEE_CLIENT_EXPORT)/bin/tee-supplicant 755 0 0" \
+ 									>> $(fl)

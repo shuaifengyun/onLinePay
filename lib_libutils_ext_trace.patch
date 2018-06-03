@@ -1,0 +1,49 @@
+diff --git a/lib/libutils/ext/trace.c b/lib/libutils/ext/trace.c
+index de06177..09704d0 100644
+--- a/lib/libutils/ext/trace.c
++++ b/lib/libutils/ext/trace.c
+@@ -181,7 +181,7 @@ void trace_printf(const char *function __unused, int line __unused,
+ 
+ #endif
+ 
+-#if (TRACE_LEVEL >= TRACE_DEBUG)
++//#if (TRACE_LEVEL >= TRACE_DEBUG)
+ struct strbuf {
+ 	char buf[MAX_PRINT_SIZE];
+ 	char *ptr;
+@@ -221,7 +221,8 @@ void dhex_dump(const char *function, int line, int level,
+ 	struct strbuf sbuf;
+ 	char *in = (char *)buf;
+ 
+-	if (level <= trace_level) {
++	//if (level <= trace_level) {
++	if (1) {
+ 		sbuf.ptr = NULL;
+ 		for (i = 0; i < len; i++) {
+ 			if ((i % 16) == 0) {
+@@ -254,7 +255,7 @@ void dhex_dump(const char *function, int line, int level,
+ err:
+ 	DMSG("Hex dump error");
+ }
+-#else
++//#else
+ 
+ /*
+  * In case we have trace level less than debug when compiling optee_os, we have
+@@ -262,10 +263,10 @@ err:
+  * a higher trace level
+  */
+ 
+-void dhex_dump(const char *function __unused, int line __unused,
+-	       int level __unused,
+-	       const void *buf __unused, int len __unused)
+-{
+-}
++//void dhex_dump(const char *function __unused, int line __unused,
++//	       int level __unused,
++//	       const void *buf __unused, int len __unused)
++//{
++//}
+ 
+-#endif
++//#endif
