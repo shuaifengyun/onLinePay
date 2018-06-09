@@ -14,18 +14,18 @@
 工具的使用（该工具将相关的数据已经hardcode在main.c文件中，读者可根据实际的数据包内容进行替换）：
 
 1. 解析第一次握手请求的命令：
-      ./cryptoLinux hsone key/handshake_from_service.pem 
+      ./serverTool hsone key/handshake_from_service.pem 
 
 2. 组包第二次握手请求的命令：
-      ./cryptoLinux hstwo key/device_rsaPublic.pem key/handshake_from_service.pem
+      ./serverTool hstwo key/device_rsaPublic.pem key/handshake_from_service.pem
       
 3. 解析第三次握手请求的命令：
-      ./cryptoLinux hsthree key/device_rsaPublic.pem key/handshake_from_service.pem
+      ./serverTool hsthree key/device_rsaPublic.pem key/handshake_from_service.pem
 
 4. 解析支付请求的命令（解密使用的AES秘钥已经hardcode在代码中，应该使用第三次握手中计算出的AES秘钥进行替换）：
-      ./cryptoLinux payreq key/device_rsaPublic.pem
+      ./serverTool payreq key/device_rsaPublic.pem
 
 5. 组包支付请求反馈数据包的命令：
-      ./cryptoLinux payover key/handshake_from_service.pem
+      ./serverTool payover key/handshake_from_service.pem
       
 Note： 本工具只是做简单的验证，如果读者需要修改数据，和使用真的随机数替换握手的信息，可以通过修改代码来实现
