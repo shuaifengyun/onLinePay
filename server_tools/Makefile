@@ -16,7 +16,7 @@ CFLAGS += -lcrypto
 CFLAGS += -ldl
 CFLAGS += -lm
 
-TARGET = cryptoLinux
+TARGET = serverTool
 TME = ~/hisi_v510/device/whaley/generic/tools/signtool
 BUILD_WITH_SECURE_BOOT=true
 
